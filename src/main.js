@@ -285,3 +285,22 @@ async function start(){
   } else renderOffline();
 }
 start();
+// Universal inline checklist update handler
+async function updateFieldInline(tableName, id, fieldName, newValue) {
+  const { error } = await supabase
+    .from(tableName)
+    .update({ [fieldName]: newValue })
+    .eq('id', id);
+
+  if (error) {
+    console.error(`Error updating ${fieldName} in ${tableName}:`, error);
+    alert('Failed to update status. Please check your network connection.');
+    return;
+  }
+
+  // Refresh dashboard counters and table views instantly
+  await loadData();
+}
+
+// Make the helper globally accessible for inline HTML event attributes
+window.updateFieldInline = updateFieldInline;
